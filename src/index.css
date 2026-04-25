@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-heading: 'Inter Tight', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --background: 0 0% 2.5%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 8.6%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 8.6%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 358 100% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 8.6%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 25%;
+    --accent: 358 100% 62%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 358 100% 62%;
+    --chart-1: 358 100% 62%;
+    --chart-2: 0 0% 25%;
+    --chart-3: 0 0% 40%;
+    --chart-4: 0 0% 60%;
+    --chart-5: 0 0% 80%;
+    --radius: 0.25rem;
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 358 100% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 14%;
+    --sidebar-ring: 358 100% 62%;
+  }
+
+  .dark {
+    --background: 0 0% 2.5%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 8.6%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 8.6%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 358 100% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 8.6%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 25%;
+    --accent: 358 100% 62%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 358 100% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-mono);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0B;
+}
+::-webkit-scrollbar-thumb {
+  background: #FF3B3F;
+  border-radius: 2px;
+}
+
+/* Scanline animation */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
+  92% { opacity: 1; }
+  93% { opacity: 0.9; }
+  94% { opacity: 1; }
+}
+
+@keyframes glitch-text {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 59, 63, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 59, 63, 0); }
+}
+
+.animate-scanline {
+  animation: scanline 8s linear infinite;
+}
+
+.animate-flicker {
+  animation: flicker 4s linear infinite;
+}
+
+.animate-pulse-red {
+  animation: pulse-red 2s ease-in-out infinite;
+}
+
+/* Grid overlay */
+.grid-overlay {
+  background-image: 
+    linear-gradient(rgba(64, 64, 64, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(64, 64, 64, 0.15) 1px, transparent 1px);
+  background-size: 80px 80px;
+}

@@ -53,7 +53,8 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router>
+        {/* FIX: Added basename so GitHub Pages knows we are in the /my-website/ folder */}
+        <Router basename="/my-website">
           <AuthenticatedApp />
         </Router>
         <Toaster />

@@ -5,7 +5,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   // Use './' to ensure all scripts and styles load relative to the current folder
-  base: './', 
+  base: '/my-website/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

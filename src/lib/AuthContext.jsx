@@ -1,10 +1,20 @@
-const db = { auth: { isAuthenticated: () => false, me: () => null }, entities: {}, integrations: { Core: { UploadFile: async () => ({ file_url: '' }) } } };
-
+import { createAxiosClient } from '../api/base44Client';
 import React, { createContext, useState, useContext, useEffect } from 'react';
-
 import { appParams } from '@/lib/app-params';
 
 const AuthContext = createContext();
+
+// Mock db object to prevent 'undefined' crashes
+const db = { 
+  auth: { 
+    isAuthenticated: () => false, 
+    me: async () => null,
+    logout: () => {},
+    redirectToLogin: () => {}
+  }, 
+  entities: {}, 
+  integrations: { Core: { UploadFile: async () => ({ file_url: '' }) } } 
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -13,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
   const [authError, setAuthError] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
-  const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+  const [appPublicSettings, setAppPublicSettings] = useState(null);
 
   useEffect(() => {
     checkAppState();
@@ -24,14 +34,10 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
-      // First, check app public settings (with token if available)
-      // This will tell us if auth is required, user not registered, etc.
       const appClient = createAxiosClient({
         baseURL: `/api/apps/public`,
-        headers: {
-          'X-App-Id': appParams.appId
-        },
-        token: appParams.token, // Include token if available
+        headers: { 'X-App-Id': appParams.appId },
+        token: appParams.token,
         interceptResponses: true
       });
       
@@ -39,7 +45,6 @@ export const AuthProvider = ({ children }) => {
         const publicSettings = await appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
         setAppPublicSettings(publicSettings);
         
-        // If we got the app public settings successfully, check if user is authenticated
         if (appParams.token) {
           await checkUserAuth();
         } else {
@@ -50,32 +55,10 @@ export const AuthProvider = ({ children }) => {
         setIsLoadingPublicSettings(false);
       } catch (appError) {
         console.error('App state check failed:', appError);
-        
-        // Handle app-level errors
-        if (appError.status === 403 && appError.data?.extra_data?.reason) {
-          const reason = appError.data.extra_data.reason;
-          if (reason === 'auth_required') {
-            setAuthError({
-              type: 'auth_required',
-              message: 'Authentication required'
-            });
-          } else if (reason === 'user_not_registered') {
-            setAuthError({
-              type: 'user_not_registered',
-              message: 'User not registered for this app'
-            });
-          } else {
-            setAuthError({
-              type: reason,
-              message: appError.message
-            });
-          }
-        } else {
-          setAuthError({
-            type: 'unknown',
-            message: appError.message || 'Failed to load app'
-          });
-        }
+        setAuthError({
+          type: appError.status === 403 ? 'auth_required' : 'unknown',
+          message: appError.message || 'Failed to load app'
+        });
         setIsLoadingPublicSettings(false);
         setIsLoadingAuth(false);
       }
@@ -92,7 +75,6 @@ export const AuthProvider = ({ children }) => {
 
   const checkUserAuth = async () => {
     try {
-      // Now check if the user is authenticated
       setIsLoadingAuth(true);
       const currentUser = await db.auth.me();
       setUser(currentUser);
@@ -104,48 +86,24 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingAuth(false);
       setIsAuthenticated(false);
       setAuthChecked(true);
-      
-      // If user auth fails, it might be an expired token
-      if (error.status === 401 || error.status === 403) {
-        setAuthError({
-          type: 'auth_required',
-          message: 'Authentication required'
-        });
-      }
     }
   };
 
   const logout = (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
-    
-    if (shouldRedirect) {
-      // Use the SDK's logout method which handles token cleanup and redirect
-      db.auth.logout(window.location.href);
-    } else {
-      // Just remove the token without redirect
-      db.auth.logout();
-    }
+    db.auth.logout(shouldRedirect ? window.location.href : undefined);
   };
 
   const navigateToLogin = () => {
-    // Use the SDK's redirectToLogin method
     db.auth.redirectToLogin(window.location.href);
   };
 
   return (
     <AuthContext.Provider value={{ 
-      user, 
-      isAuthenticated, 
-      isLoadingAuth,
-      isLoadingPublicSettings,
-      authError,
-      appPublicSettings,
-      authChecked,
-      logout,
-      navigateToLogin,
-      checkUserAuth,
-      checkAppState
+      user, isAuthenticated, isLoadingAuth, isLoadingPublicSettings,
+      authError, appPublicSettings, authChecked, logout, navigateToLogin,
+      checkUserAuth, checkAppState
     }}>
       {children}
     </AuthContext.Provider>
@@ -154,8 +112,6 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };

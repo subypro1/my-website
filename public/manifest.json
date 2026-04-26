@@ -1,0 +1,8 @@
+{
+  "short_name": "Auvion",
+  "name": "Auvion Security Portfolio",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#000000"
+}

@@ -1,14 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import { fileURLToPath } from 'url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/my-website/',
+  // Use './' to ensure all scripts and styles load relative to the current folder
+  base: './', 
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -16,5 +13,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
+    // This helps the browser console show exactly where errors are happening
+    sourcemap: true 
   }
 })
